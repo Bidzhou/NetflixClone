@@ -1,0 +1,27 @@
+{
+  "images" : [
+    {
+      "idiom" : "universal",
+      "scale" : "1x"
+    },
+    {
+      "alignment-insets" : {
+        "bottom" : 0,
+        "left" : 6,
+        "right" : 0,
+        "top" : 0
+      },
+      "filename" : "nLogo@2x.png",
+      "idiom" : "universal",
+      "scale" : "2x"
+    },
+    {
+      "idiom" : "universal",
+      "scale" : "3x"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}
