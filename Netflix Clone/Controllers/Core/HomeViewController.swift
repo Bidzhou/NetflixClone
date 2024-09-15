@@ -7,6 +7,15 @@
 
 import UIKit
 
+enum Sections: Int{
+    case TrendingMovies = 0
+    case TrendingTV = 1
+    case Popular = 2
+    case Upcoming = 3
+    case TopRated = 4
+}
+
+
 class HomeViewController: UIViewController {
 
     let sectionTitles: [String] = ["Trendind Movies", "Trending Tv", "Popular","Upcoming Moviews", "Top rated"]
@@ -29,7 +38,7 @@ class HomeViewController: UIViewController {
         
         let headerView = HeroHeaderUIView(frame: CGRect(x: 0, y: 0, width: view.bounds.width, height: 450))
         homeFeedTable.tableHeaderView = headerView
-        getTrending()
+        
         
     }
     
@@ -38,25 +47,7 @@ class HomeViewController: UIViewController {
         homeFeedTable.frame = view.bounds
     }
     
-    private func getTrending() {
-//        APICaller.shared.getTrendingMovies { results in
-//            switch results{
-//            case .success(let movies):
-//                print(movies)
-//            case .failure(let error):
-//                print(error.localizedDescription)
-//            }
-//        }
-        
-        APICaller.shared.getTrendingTVs { results in
-            switch results{
-            case .success(let tv):
-                print(tv)
-            case .failure(let error):
-                print(error.localizedDescription)
-            }
-        }
-    }
+
     
     private func configureNavbar(){
         var image = UIImage(named: "nLogo")
@@ -91,6 +82,61 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
             return UITableViewCell()
         }
         
+        switch indexPath.section{
+            
+        case Sections.TrendingMovies.rawValue:
+            APICaller.shared.getTrendingMovies { result in
+                switch result{
+                case .success(let titles):
+                    cell.configure(with: titles)
+                case .failure(let error):
+                    print(error.localizedDescription)
+                }
+            }
+        case Sections.TrendingTV.rawValue:
+            APICaller.shared.getTrendingTVs { result in
+                switch result{
+                case .success(let titles):
+                    cell.configure(with: titles)
+                case .failure(let error):
+                    print(error.localizedDescription)
+                }
+            }
+
+        case Sections.Popular.rawValue:
+            APICaller.shared.getPopularMovies { result in
+                switch result{
+                case .success(let titles):
+                    cell.configure(with: titles)
+                case .failure(let error):
+                    print(error.localizedDescription)
+                }
+            }
+
+        case Sections.Upcoming.rawValue:
+            APICaller.shared.getUpcomingMovies { result in
+                switch result{
+                case .success(let titles):
+                    cell.configure(with: titles)
+                case .failure(let error):
+                    print(error.localizedDescription)
+                }
+            }
+
+        case Sections.TopRated.rawValue:
+            APICaller.shared.getTopRatedMovies { result in
+                switch result{
+                case .success(let titles):
+                    cell.configure(with: titles)
+                case .failure(let error):
+                    print(error.localizedDescription)
+                }
+            }
+
+        default:
+            return UITableViewCell()
+        }
+        
         return cell
     }
     
@@ -114,7 +160,7 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         return sectionTitles[section]
     }
-    
+    //MARK: - Need to find out tf is this
     func scrollViewDidScroll(_ scrollView: UIScrollView) { // скрытие navigetionBar при скролле
         let defaultOffset = view.safeAreaInsets.top //Получаем значение верхнего отступа, который является верхней границей безопасной зоны
         let offset = scrollView.contentOffset.y + defaultOffset
