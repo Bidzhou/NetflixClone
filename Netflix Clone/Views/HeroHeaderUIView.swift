@@ -75,6 +75,14 @@ class HeroHeaderUIView: UIView {
         NSLayoutConstraint.activate(downloadConstraints)
     }
     
+    public func configure(with model: TitleViewModel) {
+        
+        guard let url = URL(string: "https://image.tmdb.org/t/p/w500/\(model.posterURL)") else {return}
+        heroImageView.sd_setImage(with: url, completed: nil)
+        
+        
+        
+    }
     
     private func addGradient() { //Затемнение для кнопок на постере главного экрана
         let gradientLayer = CAGradientLayer()

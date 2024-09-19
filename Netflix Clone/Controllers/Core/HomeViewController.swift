@@ -18,6 +18,9 @@ enum Sections: Int{
 
 class HomeViewController: UIViewController {
 
+    private var randomTrendingMovie: Title?
+    private var headerView: HeroHeaderUIView?
+    
     let sectionTitles: [String] = ["Trendind Movies", "Trending Tv", "Popular","Upcoming Moviews", "Top rated"]
     
     private let homeFeedTable: UITableView = {
@@ -36,8 +39,10 @@ class HomeViewController: UIViewController {
         homeFeedTable.dataSource = self
         configureNavbar()
         
-        let headerView = HeroHeaderUIView(frame: CGRect(x: 0, y: 0, width: view.bounds.width, height: 450))
+        headerView = HeroHeaderUIView(frame: CGRect(x: 0, y: 0, width: view.bounds.width, height: 450))
+        configureHeroHeaderView()
         homeFeedTable.tableHeaderView = headerView
+        
         
         
     }
@@ -47,7 +52,21 @@ class HomeViewController: UIViewController {
         homeFeedTable.frame = view.bounds
     }
     
-
+    private func configureHeroHeaderView(){
+        APICaller.shared.getTrendingMovies { [weak self] result in
+            switch result {
+            case .success(let titles):
+                DispatchQueue.main.async {
+                    let selectedTitle = titles.randomElement()
+                    self?.randomTrendingMovie = selectedTitle
+                    self?.headerView?.configure(with: TitleViewModel(titleName: selectedTitle?.title ?? "kkk", posterURL: selectedTitle?.poster_path ?? ""))
+                }
+                print()
+            case .failure(let error):
+                print(error.localizedDescription)
+            }
+        }
+    }
     
     private func configureNavbar(){
         var image = UIImage(named: "nLogo")
@@ -81,6 +100,8 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: CollectionViewTableViewCell.identifier, for: indexPath) as? CollectionViewTableViewCell else {
             return UITableViewCell()
         }
+        
+        cell.delegate = self
         
         switch indexPath.section{
             
@@ -166,5 +187,21 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
         let offset = scrollView.contentOffset.y + defaultOffset
         
         navigationController?.navigationBar.transform = .init(translationX: 0, y: min(0, -offset))
+    }
+}
+
+extension HomeViewController: CollectionViewTableViewCellDelegate{
+    func collectionViewTableViewCellDidTapCell(_ cell: CollectionViewTableViewCell, viewModel: TitlePreviewViewModel) {
+        
+        
+        DispatchQueue.main.async { [weak self] in
+            let vc = TitlePreviewViewController()
+            
+            vc.configure(with: viewModel)
+           
+            self?.navigationController?.pushViewController(vc, animated: true)
+        }
+        
+
     }
 }
